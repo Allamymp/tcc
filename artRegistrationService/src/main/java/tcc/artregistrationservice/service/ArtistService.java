@@ -7,6 +7,9 @@ import tcc.artregistrationservice.records.artist.ArtistRequestRecord;
 import tcc.artregistrationservice.repository.ArtistRepository;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +22,8 @@ public class ArtistService {
         this.artistRepository = artistRepository;
     }
 
-    private Artist create(ArtistCreateRequestRecord record) {
-        Timestamp timestamp = Timestamp.valueOf(record.dateOfBirth() + " 00:00:00");
+    public Artist create(ArtistCreateRequestRecord record) throws ParseException {
+        Timestamp timestamp = toTimestamp(record.dateOfBirth());
         Artist artist = new Artist(
                 record.name(),
                 timestamp,
@@ -31,12 +34,12 @@ public class ArtistService {
         return artistRepository.save(artist);
     }
 
-    private void delete(ArtistRequestRecord record) {
+    public void delete(ArtistRequestRecord record) {
         Optional<Artist> artistOptional = artistRepository.findById(record.id());
         artistOptional.ifPresent(artistRepository::delete);
     }
 
-    private Optional<Artist> update(ArtistRequestRecord record) {
+    public Optional<Artist> update(ArtistRequestRecord record) {
         Optional<Artist> artistOptional = findById(record.id());
 
         if (artistOptional.isPresent()) {
@@ -63,25 +66,30 @@ public class ArtistService {
         }
     }
 
-    private Optional<Artist> findById(Long id) {
+    public Optional<Artist> findById(Long id) {
         return artistRepository.findById(id);
     }
 
-    private Optional<Artist> findByName(String name) {
+    public Optional<Artist> findByName(String name) {
         return artistRepository.findByName(name);
 
     }
 
-    private Optional<List<Artist>> findAllByDateOfBirth(Timestamp dateOfBirth) {
+    public Optional<List<Artist>> findAllByDateOfBirth(Timestamp dateOfBirth) {
         return artistRepository.findAllByDateOfBirth(dateOfBirth);
     }
 
-    private Optional<List<Artist>> findAllByArtSchool(String artSchool) {
+    public Optional<List<Artist>> findAllByArtSchool(String artSchool) {
         return artistRepository.findAllByArtSchool(artSchool);
     }
 
-    private boolean notNullNotBlank(String value) {
+    public boolean notNullNotBlank(String value) {
         return value != null && !value.isBlank();
+    }
+    public Timestamp toTimestamp(String date) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date parsedDate = dateFormat.parse(date);
+        return new Timestamp(parsedDate.getTime());
     }
 
 }
