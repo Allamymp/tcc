@@ -2,64 +2,44 @@ package tcc.artregistrationservice.service;
 
 import org.springframework.stereotype.Service;
 import tcc.artregistrationservice.models.Artist;
-import tcc.artregistrationservice.records.artist.ArtistCreateRequestRecord;
-import tcc.artregistrationservice.records.artist.ArtistRequestRecord;
 import tcc.artregistrationservice.repository.ArtistRepository;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ArtistService {
-
     private final ArtistRepository artistRepository;
 
     public ArtistService(ArtistRepository artistRepository) {
         this.artistRepository = artistRepository;
     }
 
-    public Artist create(ArtistCreateRequestRecord record) throws ParseException {
-        Timestamp timestamp = toTimestamp(record.dateOfBirth());
-        Artist artist = new Artist(
-                record.name(),
-                timestamp,
-                record.description(),
-                record.artSchool(),
-                record.country()
-        );
+    public Artist create(Artist artist) {
         return artistRepository.save(artist);
     }
 
-    public void delete(ArtistRequestRecord record) {
-        Optional<Artist> artistOptional = artistRepository.findById(record.id());
+    public void delete(Long id) {
+        Optional<Artist> artistOptional = artistRepository.findById(id);
         artistOptional.ifPresent(artistRepository::delete);
     }
 
-    public Optional<Artist> update(ArtistRequestRecord record) {
-        Optional<Artist> artistOptional = findById(record.id());
-
+    public Optional<Artist> update(Artist data) {
+        Optional<Artist> artistOptional = findById(data.getId());
         if (artistOptional.isPresent()) {
             artistOptional.ifPresent(artist -> {
-
-                artist.setName(notNullNotBlank(record.name()) ? record.name() : artist.getName());
-
-                artist.setDateOfBirth(notNullNotBlank(record.dateOfBirth()) ?
-                        Timestamp.valueOf(record.dateOfBirth()) : artist.getDateOfBirth());
-
-                artist.setDescription(notNullNotBlank(record.description()) ?
-                        record.description() : artist.getDescription());
-
-                artist.setArtSchool(notNullNotBlank(record.artSchool()) ?
-                        record.artSchool() : artist.getArtSchool());
-
-                artist.setCountry(notNullNotBlank(record.country()) ?
-                        record.country() : artist.getCountry());
+                artist.setName(notNullNotBlank(data.getName())
+                        ? data.getName() : artist.getName());
+                artist.setBirth(notNullNotBlank(String.valueOf(data.getBirth()))
+                        ? data.getBirth() : artist.getBirth());
+                artist.setDescription(notNullNotBlank(data.getDescription()) ?
+                        data.getDescription() : artist.getDescription());
+                artist.setArtSchool(notNullNotBlank(data.getArtSchool()) ?
+                        data.getArtSchool() : artist.getArtSchool());
+                artist.setCountry(notNullNotBlank(data.getCountry()) ?
+                        data.getCountry() : artist.getCountry());
             });
-
             return artistOptional.map(artistRepository::save);
         } else {
             return Optional.empty();
@@ -75,8 +55,8 @@ public class ArtistService {
 
     }
 
-    public Optional<List<Artist>> findAllByDateOfBirth(Timestamp dateOfBirth) {
-        return artistRepository.findAllByDateOfBirth(dateOfBirth);
+    public Optional<List<Artist>> findAllByDateOfBirth(Date dateOfBirth) {
+        return artistRepository.findAllByBirth(dateOfBirth);
     }
 
     public Optional<List<Artist>> findAllByArtSchool(String artSchool) {
@@ -86,10 +66,4 @@ public class ArtistService {
     public boolean notNullNotBlank(String value) {
         return value != null && !value.isBlank();
     }
-    public Timestamp toTimestamp(String date) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Date parsedDate = dateFormat.parse(date);
-        return new Timestamp(parsedDate.getTime());
-    }
-
 }

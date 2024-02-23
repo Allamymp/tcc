@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -20,7 +20,7 @@ public class Artist {
     @Setter
     private String name;
     @Setter
-    private Timestamp dateOfBirth;
+    private Date birth;
     @Setter
     private String description;
     @Setter
@@ -30,10 +30,10 @@ public class Artist {
     @OneToMany(mappedBy = "artist")
     private List<ArtWork> artWorkList;
 
-    public Artist(String name, Timestamp dateOfBirth, String description, String artSchool
+    public Artist(String name, Date birth, String description, String artSchool
             , String country) {
         this.name = name;
-        this.dateOfBirth = dateOfBirth;
+        this.birth = birth;
         this.description = description;
         this.artSchool = artSchool;
         this.country = country;
