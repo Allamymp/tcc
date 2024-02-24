@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import tcc.artregistrationservice.models.Artist;
 import tcc.artregistrationservice.repository.ArtistRepository;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,10 +51,9 @@ public class ArtistService {
 
     public Optional<Artist> findByName(String name) {
         return artistRepository.findByName(name);
-
     }
 
-    public Optional<List<Artist>> findAllByArtSchool(String artSchool) {
+    public List<Artist> findAllByArtSchool(String artSchool) {
         return artistRepository.findAllByArtSchool(artSchool);
     }
 
