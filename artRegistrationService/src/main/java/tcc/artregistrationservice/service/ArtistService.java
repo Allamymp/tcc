@@ -55,10 +55,6 @@ public class ArtistService {
 
     }
 
-    public Optional<List<Artist>> findAllByDateOfBirth(Date dateOfBirth) {
-        return artistRepository.findAllByBirth(dateOfBirth);
-    }
-
     public Optional<List<Artist>> findAllByArtSchool(String artSchool) {
         return artistRepository.findAllByArtSchool(artSchool);
     }

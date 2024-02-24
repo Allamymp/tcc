@@ -1,6 +1,8 @@
 package tcc.artregistrationservice.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,10 +20,16 @@ public class Artist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
+    @Column(unique = true)
     private String name;
+    @NotNull
     private LocalDate birth;
+    @NotBlank
     private String description;
+    @NotBlank
     private String artSchool;
+    @NotBlank
     private String country;
     @OneToMany(mappedBy = "artist")
     private List<ArtWork> artWorkList;

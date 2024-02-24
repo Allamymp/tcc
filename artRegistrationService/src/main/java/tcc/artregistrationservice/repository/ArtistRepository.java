@@ -12,7 +12,5 @@ import java.util.Optional;
 public interface ArtistRepository extends JpaRepository<Artist, Long> {
     Optional<Artist> findByName(String name);
 
-    Optional<List<Artist>> findAllByBirth(Date date);
-
     Optional<List<Artist>> findAllByArtSchool(String artSchool);
 }

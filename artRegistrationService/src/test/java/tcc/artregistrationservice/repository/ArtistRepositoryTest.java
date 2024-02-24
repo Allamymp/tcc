@@ -8,9 +8,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import tcc.artregistrationservice.models.Artist;
 
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static tcc.artregistrationservice.common.ArtistConstants.ARTIST;
+import static tcc.artregistrationservice.common.ArtistConstants.INVALID_ARTIST;
 
 @DataJpaTest
 public class ArtistRepositoryTest {
@@ -30,7 +33,7 @@ public class ArtistRepositoryTest {
         //Arrange
         Artist artist = artistRepository.save(ARTIST);
         //Act
-        Artist sut = testEntityManager.find(Artist.class,artist.getId());
+        Artist sut = testEntityManager.find(Artist.class, artist.getId());
         //Assert
         assertThat(sut).isNotNull();
         assertThat(sut.getName()).isEqualTo(artist.getName());
@@ -38,6 +41,67 @@ public class ArtistRepositoryTest {
         assertThat(sut.getArtSchool()).isEqualTo(artist.getArtSchool());
         assertThat(sut.getDescription()).isEqualTo(artist.getDescription());
         assertThat(sut.getCountry()).isEqualTo(artist.getCountry());
+    }
+
+    @Test
+    public void createArtist_WithInvalidData_ThrowException() {
+        //Arrange
+        //Assert
+        //Act
+        assertThatThrownBy(() -> artistRepository.save(INVALID_ARTIST)).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void createArtist_WithExistingName_ThrowsException() {
+        //Arrange
+        Artist duplicatedArtist = testEntityManager.persistFlushFind(ARTIST);
+        testEntityManager.detach(duplicatedArtist);
+        duplicatedArtist.setId(null);
+        //Assert-Act
+        assertThatThrownBy(() -> artistRepository.save(duplicatedArtist)).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void getArtist_ByExistingId_ReturnsArtist() {
+        //Arrange
+        Artist artist = testEntityManager.persistFlushFind(ARTIST);
+        //Act
+        Optional<Artist> sut = artistRepository.findById(artist.getId());
+        //Assert
+        assertThat(sut).isNotEmpty();
+        assertThat(sut).isNotNull();
+        assertThat(sut.get().getId()).isEqualTo(artist.getId());
+        assertThat(sut.get().getName()).isEqualTo(artist.getName());
+        assertThat(sut.get().getCountry()).isEqualTo(artist.getCountry());
+        assertThat(sut.get().getDescription()).isEqualTo(artist.getDescription());
+        assertThat(sut.get().getBirth()).isEqualTo(artist.getBirth());
+    }
+    @Test
+    public void getArtist_ByUnexistingId_ReturnsEmpty(){
+        //Arrange
+        //Act
+        Optional<Artist> sut = artistRepository.findById(1L);
+        //Assert
+        assertThat(sut).isEmpty();
+    }
+
+    @Test
+    public void getArtist_ByExistingName_ReturnsArtist(){
+        //Arrange
+        Artist artist = testEntityManager.persistFlushFind(ARTIST);
+        //Act
+        Optional<Artist> sut =artistRepository.findByName(artist.getName());
+        //Assert
+        assertThat(sut).isNotEmpty();
+    }
+
+    @Test
+    public void getArtist_ByUnexistingName_ReturnsEmpty(){
+        //Arrange
+        //Act
+        Optional<Artist> sut = artistRepository.findByName(ARTIST.getName());
+        //Assert
+        assertThat(sut).isEmpty();
     }
 
 }

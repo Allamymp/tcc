@@ -12,4 +12,5 @@ public class ArtistConstants {
             "art school",
             "country"
     );
+    public static final Artist INVALID_ARTIST = new Artist();
 }

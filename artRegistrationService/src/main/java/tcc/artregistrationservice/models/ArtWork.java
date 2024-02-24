@@ -8,26 +8,27 @@ import lombok.*;
 @Table(name = "TB_ARTWORK")
 @NoArgsConstructor
 @Getter
+@Setter
 @ToString
 public class ArtWork {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Setter
+
     private String name;
-    @Setter
+
     private String description;
-    @Setter
-    private String year;
-    @Setter
+
+    private String date;
+
     private String artSchool;
     @ManyToOne
     private Artist artist;
 
-    public ArtWork(String name, String description, String year, String artSchool, Artist artist) {
+    public ArtWork(String name, String description, String date, String artSchool, Artist artist) {
         this.name = name;
         this.description = description;
-        this.year = year;
+        this.date = date;
         this.artSchool = artSchool;
         this.artist = artist;
     }
