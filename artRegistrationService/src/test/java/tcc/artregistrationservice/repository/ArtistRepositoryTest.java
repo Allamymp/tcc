@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.jdbc.Sql;
 import tcc.artregistrationservice.models.Artist;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,8 +78,9 @@ public class ArtistRepositoryTest {
         assertThat(sut.get().getDescription()).isEqualTo(artist.getDescription());
         assertThat(sut.get().getBirth()).isEqualTo(artist.getBirth());
     }
+
     @Test
-    public void getArtist_ByUnexistingId_ReturnsEmpty(){
+    public void getArtist_ByUnexistingId_ReturnsEmpty() {
         //Arrange
         //Act
         Optional<Artist> sut = artistRepository.findById(1L);
@@ -86,22 +89,40 @@ public class ArtistRepositoryTest {
     }
 
     @Test
-    public void getArtist_ByExistingName_ReturnsArtist(){
+    public void getArtist_ByExistingName_ReturnsArtist() {
         //Arrange
         Artist artist = testEntityManager.persistFlushFind(ARTIST);
         //Act
-        Optional<Artist> sut =artistRepository.findByName(artist.getName());
+        Optional<Artist> sut = artistRepository.findByName(artist.getName());
         //Assert
         assertThat(sut).isNotEmpty();
     }
 
     @Test
-    public void getArtist_ByUnexistingName_ReturnsEmpty(){
+    public void getArtist_ByUnexistingName_ReturnsEmpty() {
         //Arrange
         //Act
         Optional<Artist> sut = artistRepository.findByName(ARTIST.getName());
         //Assert
         assertThat(sut).isEmpty();
+    }
+
+    @Sql(scripts = "/import_artists.sql")
+    @Test
+    public void findAllByArtSchool_ReturnsFilteredPlanets(){
+        List<Artist> sud = artistRepository.findAllByArtSchool("Renascimento");
+
+        assertThat(sud).hasSize(4);
+        assertThat(sud.get(0).getName()).isEqualTo("Leonardo da Vinci");
+        assertThat(sud.get(1).getName()).isEqualTo("Michelangelo Buonarroti");
+        assertThat(sud.get(2).getName()).isEqualTo("Rafael Sanzio");
+
+    }
+    @Test
+    public void findAllByArtSchool_ReturnsEmpty(){
+        List<Artist> sud = artistRepository.findAllByArtSchool("Modernismo");
+
+        assertThat(sud).isEmpty();
     }
 
 }

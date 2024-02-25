@@ -28,6 +28,7 @@ public class Artist {
     @NotBlank
     private String description;
     @NotBlank
+    @Column(name = "ARTSCHOOL")
     private String artSchool;
     @NotBlank
     private String country;
