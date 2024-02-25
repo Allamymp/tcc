@@ -33,7 +33,7 @@ public class Artist {
     @NotBlank
     private String country;
     @OneToMany(mappedBy = "artist")
-    private List<ArtWork> artWorkList;
+    private List<Art> artList;
 
     public Artist(String name, LocalDate birth, String description, String artSchool
             , String country) {
@@ -42,7 +42,7 @@ public class Artist {
         this.description = description;
         this.artSchool = artSchool;
         this.country = country;
-        this.artWorkList = new ArrayList<>();
+        this.artList = new ArrayList<>();
     }
 
 }

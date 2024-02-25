@@ -4,13 +4,15 @@ package tcc.artregistrationservice.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "TB_ARTWORK")
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-public class ArtWork {
+public class Art {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,13 +21,13 @@ public class ArtWork {
 
     private String description;
 
-    private String date;
+    private LocalDate date;
 
     private String artSchool;
     @ManyToOne
     private Artist artist;
 
-    public ArtWork(String name, String description, String date, String artSchool, Artist artist) {
+    public Art(String name, String description, LocalDate date, String artSchool, Artist artist) {
         this.name = name;
         this.description = description;
         this.date = date;
