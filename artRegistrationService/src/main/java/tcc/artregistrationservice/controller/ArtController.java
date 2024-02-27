@@ -4,7 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tcc.artregistrationservice.models.Art;
+import tcc.artregistrationservice.records.art.ArtRequestRecord;
+import tcc.artregistrationservice.records.art.ArtResponseRecord;
 import tcc.artregistrationservice.service.ArtService;
 
 import java.util.List;
@@ -21,35 +22,59 @@ public class ArtController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<Art> create(@RequestBody @Valid Art art) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(artService.create(art));
+    public ResponseEntity<ArtResponseRecord> create(@RequestBody @Valid ArtRequestRecord art) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(artService.create(art));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable @Valid Long id) {
-        artService.delete(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        try {
+            artService.delete(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Art> update(@RequestBody @Valid Art data) {
-        return artService.update(data).map(art -> ResponseEntity.status(HttpStatus.OK).body(art))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<ArtResponseRecord> update(@RequestBody @Valid ArtRequestRecord data) {
+        try {
+            return artService.update(data).map(art -> ResponseEntity.status(HttpStatus.OK).body(art))
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Art> findById(@PathVariable @Valid Long id) {
-        return artService.findById(id).map(art -> ResponseEntity.status(HttpStatus.OK).body(art))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<ArtResponseRecord> findById(@PathVariable @Valid Long id) {
+        try {
+            return artService.findById(id).map(art -> ResponseEntity.status(HttpStatus.OK).body(art))
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/findAllByName/{name}")
-    public ResponseEntity<List<Art>> findAllByName(@PathVariable @Valid String name) {
-        return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByName(name));
+    public ResponseEntity<List<ArtResponseRecord>> findAllByName(@PathVariable @Valid String name) {
+       try{
+           return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByName(name));
+       }catch (RuntimeException e) {
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+       }
     }
 
     @GetMapping("/findAllByArtSchool/{artSchool}")
-    public ResponseEntity<List<Art>> findAllByArtSchool(@PathVariable @Valid String artSchool) {
-        return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByArtSchool(artSchool));
+    public ResponseEntity<List<ArtResponseRecord>> findAllByArtSchool(@PathVariable @Valid String artSchool) {
+       try{
+           return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByArtSchool(artSchool));
+       } catch (RuntimeException e) {
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+       }
     }
 }

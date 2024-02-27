@@ -1,6 +1,8 @@
 package tcc.artregistrationservice.models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +27,7 @@ public class Art {
 
     private String artSchool;
     @ManyToOne
+   @JsonManagedReference
     private Artist artist;
 
     public Art(String name, String description, LocalDate date, String artSchool, Artist artist) {

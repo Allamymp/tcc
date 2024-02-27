@@ -2,10 +2,13 @@ package tcc.artregistrationservice.service;
 
 import org.springframework.stereotype.Service;
 import tcc.artregistrationservice.models.Artist;
+import tcc.artregistrationservice.records.artist.ArtistRequestRecord;
+import tcc.artregistrationservice.records.artist.ArtistResponseRecord;
 import tcc.artregistrationservice.repository.ArtistRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static tcc.artregistrationservice.utilities.Utilities.notNullNotBlank;
 
@@ -17,53 +20,61 @@ public class ArtistService {
         this.artistRepository = artistRepository;
     }
 
-    public Artist create(Artist artist) {
-        return artistRepository.save(artist);
+    public ArtistResponseRecord create(ArtistRequestRecord artist) {
+
+        return ArtistResponseRecord.fromArtist(
+                artistRepository.save(
+                        ArtistRequestRecord.toArtist(artist)
+                )
+        );
     }
 
     public void delete(Long id) {
-        Optional<Artist> artistOptional = artistRepository.findById(id);
-        artistOptional.ifPresent(artistRepository::delete);
+        artistRepository.deleteById(id);
     }
 
-    public Optional<Artist> update(Artist data) {
-        Optional<Artist> artistOptional = findById(data.getId());
+    public Optional<ArtistResponseRecord> update(ArtistRequestRecord data) {
+        Optional<Artist> artistOptional = artistRepository.findById(data.id());
 
         if (artistOptional.isEmpty()) {
             return Optional.empty();
         }
-        return artistOptional.flatMap(artist -> {
-            if (notNullNotBlank(data.getName())) {
-                artist.setName(data.getName());
+        return artistOptional.map(artist -> {
+            if (notNullNotBlank(data.name())) {
+                artist.setName(data.name());
             }
-            if (data.getBirth() != null) {
-                artist.setBirth(data.getBirth());
+            if (data.birth() != null) {
+                artist.setBirth(data.birth());
             }
-            if (notNullNotBlank(data.getDescription())) {
-                artist.setDescription(data.getDescription());
+            if (notNullNotBlank(data.description())) {
+                artist.setDescription(data.description());
             }
-            if (notNullNotBlank(data.getArtSchool())) {
-                artist.setArtSchool(data.getArtSchool());
+            if (notNullNotBlank(data.artSchool())) {
+                artist.setArtSchool(data.artSchool());
             }
-            if (notNullNotBlank(data.getCountry())) {
-                artist.setCountry(data.getCountry());
+            if (notNullNotBlank(data.country())) {
+                artist.setCountry(data.country());
             }
 
-            return Optional.of(artistRepository.save(artist));
+            return ArtistResponseRecord.fromArtist(artistRepository.save(artist));
         });
     }
 
 
-    public Optional<Artist> findById(Long id) {
-        return artistRepository.findById(id);
+    public Optional<ArtistResponseRecord> findById(Long id) {
+        Optional<Artist> artistOptional = artistRepository.findById(id);
+        return artistOptional.map(ArtistResponseRecord::fromArtist);
     }
 
-    public Optional<Artist> findByName(String name) {
-        return artistRepository.findByName(name);
+    public Optional<ArtistResponseRecord> findByName(String name) {
+        Optional<Artist> artistOptional = artistRepository.findByName(name);
+        return artistOptional.map(ArtistResponseRecord::fromArtist);
     }
 
-    public List<Artist> findAllByArtSchool(String artSchool) {
-        return artistRepository.findAllByArtSchool(artSchool);
+    public List<ArtistResponseRecord> findAllByArtSchool(String artSchool) {
+        return artistRepository.findAllByArtSchool(artSchool).stream()
+                .map(ArtistResponseRecord::fromArtist)
+                .collect(Collectors.toList());
     }
 
 
