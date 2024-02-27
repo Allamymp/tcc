@@ -3,12 +3,10 @@ package tcc.artregistrationservice.service;
 import org.springframework.stereotype.Service;
 import tcc.artregistrationservice.models.Artist;
 import tcc.artregistrationservice.records.artist.ArtistRequestRecord;
-import tcc.artregistrationservice.records.artist.ArtistResponseRecord;
 import tcc.artregistrationservice.repository.ArtistRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static tcc.artregistrationservice.utilities.Utilities.notNullNotBlank;
 
@@ -20,20 +18,16 @@ public class ArtistService {
         this.artistRepository = artistRepository;
     }
 
-    public ArtistResponseRecord create(ArtistRequestRecord artist) {
+    public Artist create(ArtistRequestRecord artist) {
 
-        return ArtistResponseRecord.fromArtist(
-                artistRepository.save(
-                        ArtistRequestRecord.toArtist(artist)
-                )
-        );
+        return artistRepository.save(ArtistRequestRecord.toArtist(artist));
     }
 
     public void delete(Long id) {
         artistRepository.deleteById(id);
     }
 
-    public Optional<ArtistResponseRecord> update(ArtistRequestRecord data) {
+    public Optional<Artist> update(ArtistRequestRecord data) {
         Optional<Artist> artistOptional = artistRepository.findById(data.id());
 
         if (artistOptional.isEmpty()) {
@@ -56,25 +50,20 @@ public class ArtistService {
                 artist.setCountry(data.country());
             }
 
-            return ArtistResponseRecord.fromArtist(artistRepository.save(artist));
+            return artistRepository.save(artist);
         });
     }
 
-
-    public Optional<ArtistResponseRecord> findById(Long id) {
-        Optional<Artist> artistOptional = artistRepository.findById(id);
-        return artistOptional.map(ArtistResponseRecord::fromArtist);
+    public Optional<Artist> findById(Long id) {
+        return artistRepository.findById(id);
     }
 
-    public Optional<ArtistResponseRecord> findByName(String name) {
-        Optional<Artist> artistOptional = artistRepository.findByName(name);
-        return artistOptional.map(ArtistResponseRecord::fromArtist);
+    public Optional<Artist> findByName(String name) {
+        return artistRepository.findByName(name);
     }
 
-    public List<ArtistResponseRecord> findAllByArtSchool(String artSchool) {
-        return artistRepository.findAllByArtSchool(artSchool).stream()
-                .map(ArtistResponseRecord::fromArtist)
-                .collect(Collectors.toList());
+    public List<Artist> findAllByArtSchool(String artSchool) {
+        return artistRepository.findAllByArtSchool(artSchool);
     }
 
 

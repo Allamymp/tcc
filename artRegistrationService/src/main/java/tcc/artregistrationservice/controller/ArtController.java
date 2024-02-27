@@ -24,7 +24,8 @@ public class ArtController {
     @PostMapping("/create")
     public ResponseEntity<ArtResponseRecord> create(@RequestBody @Valid ArtRequestRecord art) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(artService.create(art));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ArtResponseRecord.fromArt(artService.create(art)));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -43,8 +44,9 @@ public class ArtController {
     @PostMapping("/update")
     public ResponseEntity<ArtResponseRecord> update(@RequestBody @Valid ArtRequestRecord data) {
         try {
-            return artService.update(data).map(art -> ResponseEntity.status(HttpStatus.OK).body(art))
-                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+            return artService.update(data).map(
+                            art -> ResponseEntity.status(HttpStatus.OK).body(ArtResponseRecord.fromArt(art)))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -53,28 +55,34 @@ public class ArtController {
     @GetMapping("/{id}")
     public ResponseEntity<ArtResponseRecord> findById(@PathVariable @Valid Long id) {
         try {
-            return artService.findById(id).map(art -> ResponseEntity.status(HttpStatus.OK).body(art))
-                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+            return artService.findById(id).map(
+                            art -> ResponseEntity.status(HttpStatus.OK).body(ArtResponseRecord.fromArt(art)))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping("/findAllByName/{name}")
-    public ResponseEntity<List<ArtResponseRecord>> findAllByName(@PathVariable @Valid String name) {
-       try{
-           return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByName(name));
-       }catch (RuntimeException e) {
-           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-       }
+    @GetMapping("/name")
+    public ResponseEntity<List<ArtResponseRecord>> findAllByName(@RequestParam @Valid String name) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByName(name).stream()
+                    .map(ArtResponseRecord::fromArt)
+                    .toList());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
-    @GetMapping("/findAllByArtSchool/{artSchool}")
-    public ResponseEntity<List<ArtResponseRecord>> findAllByArtSchool(@PathVariable @Valid String artSchool) {
-       try{
-           return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByArtSchool(artSchool));
-       } catch (RuntimeException e) {
-           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-       }
+    @GetMapping("/byArtSchool")
+    public ResponseEntity<List<ArtResponseRecord>> findAllByArtSchool(@RequestParam @Valid String artSchool) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByArtSchool(artSchool)
+                    .stream()
+                    .map(ArtResponseRecord::fromArt)
+                    .toList());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

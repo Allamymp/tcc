@@ -34,7 +34,7 @@ public class Artist {
     private String artSchool;
     @NotBlank
     private String country;
-    @OneToMany(mappedBy = "artist")
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Art> artList;
 
