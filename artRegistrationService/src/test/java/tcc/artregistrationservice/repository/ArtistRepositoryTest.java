@@ -93,7 +93,7 @@ public class ArtistRepositoryTest {
         //Arrange
         Artist artist = testEntityManager.persistFlushFind(ARTIST);
         //Act
-        Optional<Artist> sut = artistRepository.findByName(artist.getName());
+        Optional<Artist> sut = artistRepository.findByNameIgnoreCase(artist.getName());
         //Assert
         assertThat(sut).isNotEmpty();
     }
@@ -102,7 +102,7 @@ public class ArtistRepositoryTest {
     public void getArtist_ByUnexistingName_ReturnsEmpty() {
         //Arrange
         //Act
-        Optional<Artist> sut = artistRepository.findByName(ARTIST.getName());
+        Optional<Artist> sut = artistRepository.findByNameIgnoreCase(ARTIST.getName());
         //Assert
         assertThat(sut).isEmpty();
     }
@@ -110,7 +110,7 @@ public class ArtistRepositoryTest {
     @Sql(scripts = "/import_artists.sql")
     @Test
     public void findAllByArtSchool_ReturnsFilteredPlanets(){
-        List<Artist> sud = artistRepository.findAllByArtSchool("Renascimento");
+        List<Artist> sud = artistRepository.findAllByArtSchoolIgnoreCase("Renascimento");
 
         assertThat(sud).hasSize(4);
         assertThat(sud.get(0).getName()).isEqualTo("Leonardo da Vinci");
@@ -120,7 +120,7 @@ public class ArtistRepositoryTest {
     }
     @Test
     public void findAllByArtSchool_ReturnsEmpty(){
-        List<Artist> sud = artistRepository.findAllByArtSchool("Modernismo");
+        List<Artist> sud = artistRepository.findAllByArtSchoolIgnoreCase("Modernismo");
 
         assertThat(sud).isEmpty();
     }

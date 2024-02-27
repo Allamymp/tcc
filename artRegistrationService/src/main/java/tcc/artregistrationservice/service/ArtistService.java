@@ -59,11 +59,11 @@ public class ArtistService {
     }
 
     public Optional<Artist> findByName(String name) {
-        return artistRepository.findByName(name);
+        return artistRepository.findByNameIgnoreCase(name);
     }
 
     public List<Artist> findAllByArtSchool(String artSchool) {
-        return artistRepository.findAllByArtSchool(artSchool);
+        return artistRepository.findAllByArtSchoolIgnoreCase(artSchool);
     }
 
 
