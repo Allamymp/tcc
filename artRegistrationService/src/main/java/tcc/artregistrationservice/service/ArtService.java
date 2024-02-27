@@ -7,6 +7,7 @@ import tcc.artregistrationservice.models.Artist;
 import tcc.artregistrationservice.records.art.ArtRequestRecord;
 import tcc.artregistrationservice.repository.ArtRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,9 +19,11 @@ public class ArtService {
     private final ArtRepository artRepository;
     private final ArtistService artistService;
 
+
     public ArtService(ArtRepository artRepository, ArtistService artistService) {
         this.artRepository = artRepository;
         this.artistService = artistService;
+
     }
 
     public Art create(ArtRequestRecord art) {
@@ -62,10 +65,16 @@ public class ArtService {
     }
 
     public List<Art> findAllByName(String name) {
-        return artRepository.findAllByName(name);
+        return artRepository.findAllByNameIgnoreCase(name);
     }
 
     public List<Art> findAllByArtSchool(String artSchool) {
-        return artRepository.findAllByArtSchool(artSchool);
+        return artRepository.findAllByArtSchoolIgnoreCase(artSchool);
+    }
+
+    public List<Art> findAllByArtistName(String artistName) {
+        return artistService.findByName(artistName)
+                .map(artRepository::findAllByArtist)
+                .orElse(Collections.emptyList());
     }
 }

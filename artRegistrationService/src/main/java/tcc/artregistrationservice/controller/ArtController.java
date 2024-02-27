@@ -85,4 +85,15 @@ public class ArtController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/byArtistName")
+    public ResponseEntity<List<ArtResponseRecord>> findAllByArtistName(@RequestParam @Valid String artistName){
+        try{
+          return ResponseEntity.status(HttpStatus.OK).body(artService.findAllByArtistName(artistName)
+                  .stream()
+                  .map(ArtResponseRecord::fromArt)
+                  .toList());
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
